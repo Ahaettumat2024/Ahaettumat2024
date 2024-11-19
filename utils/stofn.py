@@ -22,16 +22,17 @@ def stofnstaerdir(ITERS):
 ## Óþarfi að breyta
 def plotStofnstaerdir(ax,stofnstaerdir, row, plotType, ITERS):
     # plottar fyrir valda á
-    stofnstaerdir.loc[:,'Heild'] = stofnstaerdir.sum(numeric_only=True, axis=1)
-    medaltal = stofnstaerdir.loc[:,row].mean()
+    stofn = stofnstaerdir.copy()
+    stofn.loc[:,'Heild'] = stofn.sum(numeric_only=True, axis=1)
+    medaltal = stofn.loc[:,row].mean()
     if plotType == 'Tímalína':
-        ax.plot(np.arange(0,ITERS),stofnstaerdir.loc[:,row])
+        ax.plot(np.arange(0,ITERS),stofn.loc[:,row])
         ax.axhline(medaltal, color='r', linestyle='dashed', linewidth=1)
         ax.text(ITERS+ITERS/20,medaltal,'Meðaltal',rotation=0,color='r')
         ax.set_ylabel('Stofnstærð')
         ax.set_xlabel('Ár')
     else:
-        ax.hist(stofnstaerdir.loc[:,row] )#bins = round(medaltal/20))
+        ax.hist(stofn.loc[:,row] )#bins = round(medaltal/20))
         ax.axvline(medaltal, color='r', linestyle='dashed', linewidth=1)
         ax.text(medaltal+0.2,1,'Meðaltal',rotation=0,color='r',)
         ax.set_xlabel('Stofnstærð')
