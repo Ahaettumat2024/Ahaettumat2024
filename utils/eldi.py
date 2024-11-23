@@ -17,7 +17,7 @@ EARLY_YEARLY_DISTR = [0, 30/56, 17/56, 9/56] # dreifing á snemmbúnum stokulöx
 @st.cache_data
 def calcEscapeEvents(ITERS):
     # Reiknar fjölda atburða per ár ITERS ár
-    escSchedule = np.random.poisson(1/2.25, 1000)
+    escSchedule = np.random.poisson(1/EVENTS_PER_YEAR, 1000)
     return escSchedule
 
 @st.cache_data
