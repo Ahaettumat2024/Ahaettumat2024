@@ -4,7 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-EVENTS_PER_YEAR = 2.1 # meðalfjöldi atburða á ári
+EVENTS_PER_YEAR = 0.4 # meðalfjöldi atburða á ári
 SIZE_PROPORTION = 0.67 # hlutfall snemmbúimma vs. síðbúinna
 
 LATE_RETURNS_PROP = 0.0025 # fjöldi síðbúinna stokulaxa sem snúa aftur
@@ -55,7 +55,7 @@ def getSizeOfEvents(farmEventsEarly, farmEventsLate):
         # slembifall sem gefur stærð strokatburðar
         number = 0
         for i in range(numberOfEvents):
-            number += np.random.exponential(140000)
+            number += np.random.exponential(20000)
         return number
     
 
