@@ -4,11 +4,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-EVENTS_PER_YEAR = 0.4 # meðalfjöldi atburða á ári
+EVENTS_PER_YEAR = 0.57 # 1meðalfjöldi atburða á ári
 SIZE_PROPORTION = 0.67 # hlutfall snemmbúimma vs. síðbúinna
 
 LATE_RETURNS_PROP = 0.0025 # fjöldi síðbúinna stokulaxa sem snúa aftur
-EARLY_RETURNS_PROP = 0.0013 # fjöldi snemmbúinna stokulaxa sem snúa aftur
+EARLY_RETURNS_PROP = 0.0020 # fjöldi snemmbúinna stokulaxa sem snúa aftur
 EARLY_YEARLY_DISTR = [0, 30/56, 17/56, 9/56] # dreifing á snemmbúnum stokulöxum yfir fjögur ár
 
 
