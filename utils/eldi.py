@@ -4,8 +4,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-EVENTS_PER_YEAR = 0.57 # 1/meðalfjöldi atburða á ári
+EVENTS_PER_YEAR = 1.75 # 1/meðalfjöldi atburða á ári
 SIZE_PROPORTION = 0.67 # hlutfall snemmbúimma vs. síðbúinna
+ESCAPES_PER_TON = 0.5 # fjöldi strokulaxa per tonn
 
 LATE_RETURNS_PROP = 0.0025 # fjöldi síðbúinna stokulaxa sem snúa aftur
 EARLY_RETURNS_PROP = 0.0020 # fjöldi snemmbúinna stokulaxa sem snúa aftur
@@ -17,7 +18,7 @@ EARLY_YEARLY_DISTR = [0, 30/56, 17/56, 9/56] # dreifing á snemmbúnum stokulöx
 @st.cache_data
 def calcEscapeEvents(ITERS):
     # Reiknar fjölda atburða per ár ITERS ár
-    escSchedule = np.random.poisson(1/EVENTS_PER_YEAR, 1000)
+    escSchedule = np.random.poisson(EVENTS_PER_YEAR, 1000)
     return escSchedule
 
 @st.cache_data
@@ -50,12 +51,13 @@ def splitFarmEvents(farmEvents,ITERS):
 @st.cache_data
 def getSizeOfEvents(farmEventsEarly, farmEventsLate):
     # Reiknar meðalstærð atburða á eldisstað
-
     def getSizeOfEvents(numberOfEvents):
         # slembifall sem gefur stærð strokatburðar
         number = 0
+        farmTotal = np.sum(st.session_state['eldi']['Stock'].to_numpy())
+        expected = ESCAPES_PER_TON*farmTotal*1000/EVENTS_PER_YEAR
         for i in range(numberOfEvents):
-            number += np.random.exponential(20000)
+            number += np.random.exponential(expected)
         return number
     
 

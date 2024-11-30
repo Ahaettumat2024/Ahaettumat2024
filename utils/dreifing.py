@@ -5,22 +5,23 @@ import matplotlib.pyplot as plt
 
 
 LATE_PROPORTION = 0.2
-LATE_LENGTH = 540
+LATE_LENGTH = 240
 LATE_LENGTH_2 = LATE_LENGTH*(1-LATE_PROPORTION)/LATE_PROPORTION
+
 EARLY_PROPORTION = 0.2
 EARLY_LENGTH = 80
 EARLY_LENGTH_2 = EARLY_LENGTH*(1-EARLY_PROPORTION)/EARLY_PROPORTION
 
 def lateDistribution(x):
     # Reiknar dreifingu síbúinna stokulaxa
-    if x < 0:
+    if x > 0:
         return np.exp(-(-x/LATE_LENGTH_2)**2)
     else:
         return np.exp(-(x/LATE_LENGTH)**2)
     
 def earlyDistribution(x):
     # Reiknar dreifingu snemmbúinna stokulaxa
-    if x < 0:
+    if x > 0:
         return np.exp(-(-x/EARLY_LENGTH_2)**2)
     else:
         return np.exp(-(x/EARLY_LENGTH)**2)
@@ -31,16 +32,20 @@ def getEarlyFarmedDistribution(stofnstaerdir, farmNo):
     farmPosition = st.session_state['eldi'].loc[farmNo,'staðsetning']
     distances = st.session_state['rivers']['fjarlægð'].to_numpy()
     adjustedDistances = distances - farmPosition
+    adjustedDistances = pd.Series(adjustedDistances)
 
-    adjustedDistances = pd.Series(np.append(adjustedDistances,0))
-    stofnstaerdir = np.append(stofnstaerdir.to_numpy(),100)
+    #adjustedDistances = pd.Series(np.append(adjustedDistances,0))
+    #stofnstaerdir = np.append(stofnstaerdir.to_numpy(),100)
 
     adjustedDistances = adjustedDistances.map(lambda x : x + 2430 if x < -1215 else (x - 2430 if x > 1215 else x))
     distancesProb = adjustedDistances.map(earlyDistribution).to_numpy()
+    distancesProb = distancesProb/distancesProb.sum()
+    stofnstaerdirProb = np.sqrt(stofnstaerdir)/(np.sum(np.sqrt(stofnstaerdir)))
+    stofnstaerdirProb = stofnstaerdirProb/stofnstaerdirProb.sum()
 
-    distribution = stofnstaerdir*distancesProb/distancesProb.sum()
+    distribution = distancesProb*stofnstaerdirProb
     distribution = distribution/np.sum(distribution)
-    distribution = distribution[:-1]
+    #distribution = distribution[:-1]
     return distribution
 
 @st.cache_data
@@ -52,8 +57,11 @@ def getLateFarmedDistribution(stofnstaerdir, farmNo):
 
     adjustedDistances = adjustedDistances.map(lambda x : x + 2430 if x < -1215 else (x - 2430 if x > 1215 else x))
     distancesProb = adjustedDistances.map(lateDistribution).to_numpy()
+    distancesProb = distancesProb/distancesProb.sum()
+    stofnstaerdirProb = np.sqrt(stofnstaerdir)/(np.sum(np.sqrt(stofnstaerdir)))
+    stofnstaerdirProb = stofnstaerdirProb/stofnstaerdirProb.sum()
 
-    distribution = stofnstaerdir*distancesProb/distancesProb.sum()
+    distribution = distancesProb*stofnstaerdirProb
     distribution = distribution/np.sum(distribution)
 
     return distribution

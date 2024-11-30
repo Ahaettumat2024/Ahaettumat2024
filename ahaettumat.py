@@ -71,7 +71,8 @@ col311, col312, col313 = col31.columns([1, 1, 1])
 
 for eldisIdx in st.session_state['eldi'].index:
     row = st.session_state['eldi'].iloc[eldisIdx]
-    eldismagn.slider(row['Nafn'], 0.0, row['max'], row['Stock'], step = 0.5, key = row['Stytting'], on_change=updateEldi, args=(row['Stytting'],))
+    eldismagn.metric(row['Nafn'], row['Stock'])
+    #eldismagn.slider(row['Nafn'], 0.0, row['max'], row['Stock'], step = 0.5, key = row['Stytting'], on_change=updateEldi, args=(row['Stytting'],))
 
 col311.metric('Meðalfjöldi atburða á ári',  st.session_state['escSchedule'].mean())
 col312.metric('Meðalfjöldi stroka á ári', round(( st.session_state['farmNumbersEarly'].to_numpy().sum()+ st.session_state['farmNumbersLate'].to_numpy().sum())/1000))
