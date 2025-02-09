@@ -1,3 +1,4 @@
+
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -16,8 +17,8 @@ if 'rivers' not in st.session_state:
     st.session_state['rivers'] = getRivers()
 if 'eldi' not in st.session_state:
     st.session_state['eldi'] = getFarms()
-if 'settings' not in st.session_state:
-    st.session_state['settings'] = getSetings()
+if 'distances' not in st.session_state:
+    st.session_state['distances'] = getDistances()
 if 'calc' not in st.session_state:
     st.session_state['calc'] = False
 
