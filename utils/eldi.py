@@ -8,8 +8,8 @@ EVENTS_PER_YEAR = 1.75 # 1/meðalfjöldi atburða á ári
 SIZE_PROPORTION = 0.67 # hlutfall snemmbúimma vs. síðbúinna
 ESCAPES_PER_TON = 0.5 # fjöldi strokulaxa per tonn
 
-LATE_RETURNS_PROP = 0.0025 # fjöldi síðbúinna stokulaxa sem snúa aftur
-EARLY_RETURNS_PROP = 0.0020 # fjöldi snemmbúinna stokulaxa sem snúa aftur
+LATE_RETURNS_PROP = 0.0016 # fjöldi síðbúinna stokulaxa sem snúa aftur
+EARLY_RETURNS_PROP = 0.0015 # fjöldi snemmbúinna stokulaxa sem snúa aftur
 EARLY_YEARLY_DISTR = [0, 30/56, 17/56, 9/56] # dreifing á snemmbúnum stokulöxum yfir fjögur ár
 
 
