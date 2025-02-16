@@ -10,7 +10,7 @@ import random
 st.set_page_config(layout="wide")
 
 random.seed(0)
-ITERS = 1000
+ITERS = 10000
 
 ## Setup
 if 'rivers' not in st.session_state:
