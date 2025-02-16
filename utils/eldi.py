@@ -15,13 +15,13 @@ EARLY_YEARLY_DISTR = [0, 30/56, 17/56, 9/56] # dreifing á snemmbúnum stokulöx
 
 
 ## Hægt að breyta
-#@st.cache_data
+@st.cache_data
 def calcEscapeEvents(ITERS):
     # Reiknar fjölda atburða per ár ITERS ár
     escSchedule = np.random.poisson(EVENTS_PER_YEAR, 1000)
     return escSchedule
 
-#@st.cache_data
+@st.cache_data
 def splitEvents(escSchedule, ITERS):
     # Skiptir atburðum niður á eldisstaði eftir eldismagni
     farmNumbers = st.session_state['eldi'].index.to_numpy()
@@ -34,7 +34,7 @@ def splitEvents(escSchedule, ITERS):
             farmEvents.loc[i,farm] += 1
     return farmEvents
 
-#@st.cache_data
+@st.cache_data
 def splitFarmEvents(farmEvents,ITERS):
     # Skiptir atburðum niður eftir stærð stokulaxa
 
@@ -48,7 +48,7 @@ def splitFarmEvents(farmEvents,ITERS):
                     farmEventsEarly.loc[i,farm] += 1
     return farmEventsEarly, farmEventsLate
 
-#@st.cache_data
+@st.cache_data
 def getSizeOfEvents(farmEventsEarly, farmEventsLate):
     # Reiknar meðalstærð atburða á eldisstað
     def getSizeOfEvents(numberOfEvents):
@@ -66,7 +66,7 @@ def getSizeOfEvents(farmEventsEarly, farmEventsLate):
 
     return farmNumbersEarly, farmNumbersLate
 
-#@st.cache_data
+@st.cache_data
 def getNumberOfReturners(farmNumbersEarly, farmNumbersLate, ITERS):
     farmEarlyReturns = pd.DataFrame(0, index=np.arange(ITERS), columns=farmNumbersEarly.columns)
     farmLateReturns = farmNumbersLate.map(lambda x: round(x*LATE_RETURNS_PROP))
@@ -84,36 +84,36 @@ def updateEldi(key):
     st.session_state['eldi'].loc[st.session_state['eldi']['Stytting'] == key, 'Stock'] = st.session_state[key]
 
 def plotEldi(ax, farm, plotType,farmEventsEarly, farmEventsLate,farmNumbersEarly, farmNumbersLate,farmEarlyReturns, farmLateReturns):
-    if farm == 'Heild':
-        if plotType == 'Atburðir':
-            ax.bar(farmEventsEarly.iloc[0:100].index, farmEventsEarly.sum(axis=1).iloc[0:100], label='Snemmbúnir')
-            ax.bar(farmEventsLate.iloc[0:100].index, farmEventsLate.sum(axis=1).iloc[0:100], bottom = farmEventsEarly.sum(axis=1).iloc[0:100], label='Síðbúnir')
-            ax.set_ylabel('Fjöldi atburða')
-        elif plotType == 'Strokfjöldi':
-            ax.bar(farmNumbersEarly.iloc[0:100].index, farmNumbersEarly.sum(axis=1).iloc[0:100], label='Snemmbúnir')
-            ax.bar(farmNumbersLate.iloc[0:100].index, farmNumbersLate.sum(axis=1).iloc[0:100], bottom = farmNumbersEarly.sum(axis=1).iloc[0:100], label='Síðbúnir')
-            ax.set_ylabel('Fjöldi stokulaxa')
+    if farm == 'Total':
+        if plotType == 'Events':
+            ax.bar(farmEventsEarly.iloc[0:100].index, farmEventsEarly.sum(axis=1).iloc[0:100], label='Early')
+            ax.bar(farmEventsLate.iloc[0:100].index, farmEventsLate.sum(axis=1).iloc[0:100], bottom = farmEventsEarly.sum(axis=1).iloc[0:100], label='Late')
+            ax.set_ylabel('Number of events')
+        elif plotType == 'Escape numbers':
+            ax.bar(farmNumbersEarly.iloc[0:100].index, farmNumbersEarly.sum(axis=1).iloc[0:100], label='Early')
+            ax.bar(farmNumbersLate.iloc[0:100].index, farmNumbersLate.sum(axis=1).iloc[0:100], bottom = farmNumbersEarly.sum(axis=1).iloc[0:100], label='Late')
+            ax.set_ylabel('Number of escapees')
         else:
-            ax.bar(farmEarlyReturns.iloc[0:100].index, farmEarlyReturns.sum(axis=1).iloc[0:100], label='Snemmbúnir')
-            ax.bar(farmLateReturns.iloc[0:100].index, farmLateReturns.sum(axis=1).iloc[0:100], bottom = farmEarlyReturns.sum(axis=1).iloc[0:100], label='Síðbúnir')
-            ax.set_ylabel('Fjöldi endurkomulaxa')
+            ax.bar(farmEarlyReturns.iloc[0:100].index, farmEarlyReturns.sum(axis=1).iloc[0:100], label='Early')
+            ax.bar(farmLateReturns.iloc[0:100].index, farmLateReturns.sum(axis=1).iloc[0:100], bottom = farmEarlyReturns.sum(axis=1).iloc[0:100], label='Late')
+            ax.set_ylabel('Number of returners')
     else:
         farmDict = pd.Series(st.session_state['eldi'].index, index=st.session_state['eldi']['Nafn'].values).to_dict()
         farmNo = farmDict[farm]
 
-        if plotType == 'Atburðir':
-            ax.bar(farmEventsEarly.iloc[0:100].index, farmEventsEarly.iloc[0:100][farmNo], label='Snemmbúnir')
-            ax.bar(farmEventsLate.iloc[0:100].index, farmEventsLate.iloc[0:100][farmNo], bottom = farmEventsEarly.iloc[0:100][farmNo], label='Síðbúnir')
-            ax.set_ylabel('Fjöldi atburða')
-        elif plotType == 'Strokfjöldi':
-            ax.bar(farmNumbersEarly.iloc[0:100].index, farmNumbersEarly.iloc[0:100][farmNo], label='Snemmbúnir')
-            ax.bar(farmNumbersLate.iloc[0:100].index, farmNumbersLate.iloc[0:100][farmNo], bottom = farmNumbersEarly.iloc[0:100][farmNo], label='Síðbúnir')
-            ax.set_ylabel('Fjöldi stokulaxa')
+        if plotType == 'Events':
+            ax.bar(farmEventsEarly.iloc[0:100].index, farmEventsEarly.iloc[0:100][farmNo], label='Early')
+            ax.bar(farmEventsLate.iloc[0:100].index, farmEventsLate.iloc[0:100][farmNo], bottom = farmEventsEarly.iloc[0:100][farmNo], label='Late')
+            ax.set_ylabel('Number of events')
+        elif plotType == 'Escape numbers':
+            ax.bar(farmNumbersEarly.iloc[0:100].index, farmNumbersEarly.iloc[0:100][farmNo], label='Early')
+            ax.bar(farmNumbersLate.iloc[0:100].index, farmNumbersLate.iloc[0:100][farmNo], bottom = farmNumbersEarly.iloc[0:100][farmNo], label='Late')
+            ax.set_ylabel('Number of escapees')
         else:
-            ax.bar(farmEarlyReturns.iloc[0:100].index, farmEarlyReturns.iloc[0:100][farmNo], label='Snemmbúnir')
-            ax.bar(farmLateReturns.iloc[0:100].index, farmLateReturns.iloc[0:100][farmNo], bottom = farmEarlyReturns.iloc[0:100][farmNo], label='Síðbúnir')
-            ax.set_ylabel('Fjöldi endurkomulaxa')
+            ax.bar(farmEarlyReturns.iloc[0:100].index, farmEarlyReturns.iloc[0:100][farmNo], label='Early')
+            ax.bar(farmLateReturns.iloc[0:100].index, farmLateReturns.iloc[0:100][farmNo], bottom = farmEarlyReturns.iloc[0:100][farmNo], label='Late')
+            ax.set_ylabel('Number of returners')
     ax.legend()
-    ax.set_title(f'{plotType} fyrstu 100 árin')
-    ax.set_xlabel('Ár')
+    ax.set_title(f'{plotType} the first 100 years')
+    ax.set_xlabel('Year')
     return ax
