@@ -26,10 +26,12 @@ def earlyDistribution(x):
     else:
         return np.exp(-(x/EARLY_LENGTH)**2)
 
-#@st.cache_data
+@st.cache_data
 def getEarlyFarmedDistribution(farmNo):
     farmName = st.session_state['eldi'].loc[farmNo,'Stytting']
     distances = st.session_state['distances'][farmName]
+    print(farmName)
+    print(distances)
 
     distancesProb = distances.map(earlyDistribution).to_numpy()
     stofnstaerdirProb = np.sqrt(st.session_state['rivers']['expMedal10'].to_numpy())
@@ -39,14 +41,13 @@ def getEarlyFarmedDistribution(farmNo):
     distribution = distribution/np.sum(distribution)
     return distribution
 
-#@st.cache_data
+@st.cache_data
 def getLateFarmedDistribution(farmNo):
     # Reiknar hlutfall síbúinna stokulaxa sem fer í hverja á 
     farmName = st.session_state['eldi'].loc[farmNo,'Stytting']
     distances = st.session_state['distances'][farmName]
 
     distancesProb = distances.map(lateDistribution).to_numpy()
-    distancesProb = distancesProb/np.max(distancesProb)
     stofnstaerdirProb = np.sqrt(st.session_state['rivers']['expMedal10'].to_numpy())
     stofnstaerdirProb = stofnstaerdirProb/np.max(stofnstaerdirProb)
 
@@ -54,7 +55,7 @@ def getLateFarmedDistribution(farmNo):
     distribution = distribution/np.sum(distribution)
     return distribution
 
-#@st.cache_data
+@st.cache_data
 def getResults(stofnstaerdir, farmEarlyReturns, farmLateReturns, ITERS):
     # Reiknar niðurstöður
     stofn = stofnstaerdir.copy()
@@ -74,31 +75,31 @@ def plotDistribution(ax, type, farm):
     # Plottar dreyfingu
     farmDict = pd.Series(st.session_state['eldi'].index, index=st.session_state['eldi']['Nafn'].values).to_dict()
     farmNo = farmDict[farm]
-    if type == 'Snemmbúnir':
+    if type == 'Early':
         distribution = getEarlyFarmedDistribution(farmNo)
     else:
         distribution = getLateFarmedDistribution(farmNo)
 
-    ax.bar(st.session_state['rivers']['nafn'], distribution)
+    ax.bar(st.session_state['rivers']['nafn'][distribution>0.0001], distribution[distribution>0.0001])
     ax.set_xticks(ax.get_xticks())
-    ax.set_xticklabels(st.session_state['rivers']['nafn'], rotation=90, ha='right',fontsize=5)
+    ax.set_xticklabels(st.session_state['rivers']['nafn'].loc[distribution>0.0001], rotation=45, ha='right',fontsize=3.5)
     return ax
 
 def plotResult(ax, river, results):
-    if river == 'Heild':
+    if river == 'Total':
         results = results.mean(axis=0)
         ax.bar(results.index, results)
         ax.axhline(4, color='r', linestyle='dashed', linewidth=1)
-        ax.set_title('Meðalhlutfall eldislaxa í á')
-        ax.set_ylabel('Meðalhlutfall')
+        ax.set_title('Average proportion of farmed salmon in river')
+        ax.set_ylabel('Average proportion')
         ax.set_xticks(ax.get_xticks())
-        ax.set_xticklabels(results.index, rotation=90, ha='right',fontsize=5)
+        ax.set_xticklabels(results.index, rotation=45, ha='right',fontsize=3.5)
     else:
         ax.hist(results.loc[:,river])
-        ax.axvline(results.loc[:,river].mean(), color='g', linestyle='dashed', linewidth=1)
+        ax.axvline(results.loc[:,river].mean(), color='g', linestyle='dashed', linewidth=1, label='Average: '+str(round(results.loc[:,river].mean(),2)))
         ax.axvline(4, color='r', linestyle='dashed', linewidth=1)
-        ax.text(results.loc[:,river].mean()+0.05,1,'Meðaltal',rotation=0,color='g')
-        ax.set_title(f'Hlutfall eldislaxa í {river}')
-        ax.set_xlabel('Hlutfall')
-        ax.set_ylabel('Fjöldi ára')
+        ax.legend(loc='upper right')
+        ax.set_title(f'Proportion of farmed salmons in {river}')
+        ax.set_xlabel('Proportion')
+        ax.set_ylabel('Number of years')
     return ax
