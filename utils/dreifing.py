@@ -26,7 +26,7 @@ def earlyDistribution(x):
     else:
         return np.exp(-(x/EARLY_LENGTH)**2)
 
-@st.cache_data
+#@st.cache_data
 def getEarlyFarmedDistribution(farmNo):
     farmName = st.session_state['eldi'].loc[farmNo,'Stytting']
     distances = st.session_state['distances'][farmName]
@@ -41,7 +41,7 @@ def getEarlyFarmedDistribution(farmNo):
     distribution = distribution/np.sum(distribution)
     return distribution
 
-@st.cache_data
+#@st.cache_data
 def getLateFarmedDistribution(farmNo):
     # Reiknar hlutfall síbúinna stokulaxa sem fer í hverja á 
     farmName = st.session_state['eldi'].loc[farmNo,'Stytting']
@@ -55,7 +55,7 @@ def getLateFarmedDistribution(farmNo):
     distribution = distribution/np.sum(distribution)
     return distribution
 
-@st.cache_data
+#@st.cache_data
 def getResults(stofnstaerdir, farmEarlyReturns, farmLateReturns, ITERS):
     # Reiknar niðurstöður
     stofn = stofnstaerdir.copy()
