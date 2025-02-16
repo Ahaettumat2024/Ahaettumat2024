@@ -100,8 +100,8 @@ def plotResult(ax, river, results):
         results = results.mean(axis=0)
         ax.bar(results.index, results)
         ax.axhline(4, color='r', linestyle='dashed', linewidth=1)
-        ax.set_title('Average proportion of farmed salmon in river')
-        ax.set_ylabel('Average proportion')
+        ax.set_title('Average percentage of farmed salmon in river')
+        ax.set_ylabel('Average percent')
         ax.set_xticks(ax.get_xticks())
         ax.set_xticklabels(results.index, rotation=45, ha='right',fontsize=3.5)
     else:
@@ -109,7 +109,7 @@ def plotResult(ax, river, results):
         ax.axvline(results.loc[:,river].mean(), color='g', linestyle='dashed', linewidth=1, label='Average: '+str(round(results.loc[:,river].mean(),2)))
         ax.axvline(4, color='r', linestyle='dashed', linewidth=1)
         ax.legend(loc='upper right')
-        ax.set_title(f'Proportion of farmed salmons in {river}')
-        ax.set_xlabel('Proportion')
+        ax.set_title(f'Percentage of farmed salmons in {river}')
+        ax.set_xlabel('Percent')
         ax.set_ylabel('Number of years')
     return ax
