@@ -30,8 +30,6 @@ def earlyDistribution(x):
 def getEarlyFarmedDistribution(farmNo):
     farmName = st.session_state['eldi'].loc[farmNo,'Stytting']
     distances = st.session_state['distances'][farmName]
-    print(farmName)
-    print(distances)
 
     distancesProb = distances.map(earlyDistribution).to_numpy()
     stofnstaerdirProb = np.sqrt(st.session_state['rivers']['expMedal10'].to_numpy())
