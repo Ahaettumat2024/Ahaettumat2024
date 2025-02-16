@@ -25,11 +25,11 @@ def earlyDistribution(x):
         return np.exp(-(x/EARLY_LENGTH_2)**2)
     else:
         return np.exp(-(x/EARLY_LENGTH)**2)
-
 #@st.cache_data
 def getEarlyFarmedDistribution(farmNo):
     farmName = st.session_state['eldi'].loc[farmNo,'Stytting']
     distances = st.session_state['distances'][farmName]
+    print(distances)
 
     distancesProb = distances.map(earlyDistribution).to_numpy()
     stofnstaerdirProb = np.sqrt(st.session_state['rivers']['expMedal10'].to_numpy())
@@ -38,6 +38,12 @@ def getEarlyFarmedDistribution(farmNo):
     distribution = distancesProb*stofnstaerdirProb
     distribution = distribution/np.sum(distribution)
     return distribution
+
+def getEarlyFarmedDistributionNumbers(farmNo, amount):
+    distribution = getEarlyFarmedDistribution(farmNo)
+    draws = np.random.choice(len(distribution), size=amount, p=distribution)
+    counts = np.bincount(draws, minlength=len(distribution))
+    return counts
 
 #@st.cache_data
 def getLateFarmedDistribution(farmNo):
@@ -53,6 +59,12 @@ def getLateFarmedDistribution(farmNo):
     distribution = distribution/np.sum(distribution)
     return distribution
 
+def getLateFarmedDistributionNumbers(farmNo, amount):
+    distribution = getLateFarmedDistribution(farmNo)
+    draws = np.random.choice(len(distribution), size=amount, p=distribution)
+    counts = np.bincount(draws, minlength=len(distribution))
+    return counts
+
 #@st.cache_data
 def getResults(stofnstaerdir, farmEarlyReturns, farmLateReturns, ITERS):
     # Reiknar niðurstöður
@@ -62,12 +74,12 @@ def getResults(stofnstaerdir, farmEarlyReturns, farmLateReturns, ITERS):
         print(i)
         for j in farmEarlyReturns.columns:
             if farmEarlyReturns.loc[i,j] > 0:
-                results.loc[i] += farmEarlyReturns.loc[i,j]*getEarlyFarmedDistribution(j)
+                results.loc[i] += getEarlyFarmedDistributionNumbers(j, farmLateReturns.loc[i,j])
             if farmLateReturns.loc[i,j] > 0:
-                results.loc[i] += farmLateReturns.loc[i,j]*getLateFarmedDistribution(j)
+                results.loc[i] += getLateFarmedDistributionNumbers(j, farmLateReturns.loc[i,j])
         results.loc[i,:] = 100*(results.loc[i,:].to_numpy()-stofn.loc[i,:].to_numpy())/(results.loc[i,:].clip(lower = 1)).to_numpy()
     return results
-
+    
 ## Oþarfi að breyta
 def plotDistribution(ax, type, farm):
     # Plottar dreyfingu
