@@ -25,19 +25,19 @@ def stofnstaerdir(ITERS):
 def plotStofnstaerdir(ax,stofnstaerdir, row, plotType, ITERS):
     # plottar fyrir valda á
     stofn = stofnstaerdir.copy()
-    stofn.loc[:,'Heild'] = stofn.sum(numeric_only=True, axis=1)
+    stofn.loc[:,'Total'] = stofn.sum(numeric_only=True, axis=1)
     medaltal = stofn.loc[:,row].mean()
-    if plotType == 'Tímalína':
+    if plotType == 'Timeline':
         ax.plot(np.arange(0,ITERS),stofn.loc[:,row])
-        ax.axhline(medaltal, color='r', linestyle='dashed', linewidth=1)
-        ax.text(ITERS+ITERS/20,medaltal,'Meðaltal',rotation=0,color='r')
-        ax.set_ylabel('Stofnstærð')
-        ax.set_xlabel('Ár')
+        ax.axhline(medaltal, color='r', linestyle='dashed', linewidth=1, label='Average: '+str(round(medaltal)))
+        ax.legend()
+        ax.set_ylabel('Stock size')
+        ax.set_xlabel('Year')
     else:
         ax.hist(stofn.loc[:,row] )#bins = round(medaltal/20))
-        ax.axvline(medaltal, color='r', linestyle='dashed', linewidth=1)
-        ax.text(medaltal+0.2,1,'Meðaltal',rotation=0,color='r',)
-        ax.set_xlabel('Stofnstærð')
-        ax.set_ylabel('Fjöldi ára')
-    ax.set_title(f'Stofnstærð fyrir {row}')
+        ax.axvline(medaltal, color='r', linestyle='dashed', linewidth=1, label='Average: '+str(round(medaltal)))
+        ax.legend()
+        ax.set_xlabel('Stock size')
+        ax.set_ylabel('Number of years')
+    ax.set_title(f'Stock size of {row}')
     return ax
