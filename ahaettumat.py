@@ -7,7 +7,7 @@ from utils.eldi import *
 from utils.dreifing import *
 from utils.gogn import *
 import random
-#st.set_page_config(layout="wide")
+st.set_page_config(layout="wide")
 
 random.seed(0)
 ITERS = 1000
