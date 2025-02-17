@@ -6,7 +6,7 @@ import numpy as np
 ## Hægt að breyta
 #@st.cache_data
 def stofnstaerdir(ITERS):
-    # Dregur stofnstærðarþróun áa fyrir ITERS ár út frá meðalstofnstærð og staðalfrávikum
+    # Calculates stock sizes per year for ITERS years
     FjoldiAa = st.session_state['rivers'].shape
     print(st.session_state['rivers'])
     temp = np.random.normal(0, 1.0,  [FjoldiAa[0], ITERS])
