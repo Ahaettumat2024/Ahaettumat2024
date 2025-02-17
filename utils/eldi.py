@@ -15,13 +15,13 @@ EARLY_YEARLY_DISTR = [0, 30/56, 17/56, 9/56] # Early returns distributed over fo
 
 
 ## Hægt að breyta
-#@st.cache_data
+@st.cache_data
 def calcEscapeEvents(ITERS):
     # Number of events for ITERS years
     escSchedule = np.random.poisson(EVENTS_PER_YEAR, ITERS)
     return escSchedule
 
-#@st.cache_data
+@st.cache_data
 def splitEvents(escSchedule, ITERS):
     # Divides events down to farm sites based on production
     farmNumbers = st.session_state['eldi'].index.to_numpy()
@@ -34,7 +34,7 @@ def splitEvents(escSchedule, ITERS):
             farmEvents.loc[i,farm] += 1
     return farmEvents
 
-#@st.cache_data
+@st.cache_data
 def splitFarmEvents(farmEvents,ITERS):
     # Splits events into early / late
 
@@ -48,7 +48,7 @@ def splitFarmEvents(farmEvents,ITERS):
                     farmEventsEarly.loc[i,farm] += 1
     return farmEventsEarly, farmEventsLate
 
-#@st.cache_data
+@st.cache_data
 def getSizeOfEvents(farmEventsEarly, farmEventsLate):
     # Calculates size of events
     def getSizeOfEvents(numberOfEvents):
@@ -66,7 +66,7 @@ def getSizeOfEvents(farmEventsEarly, farmEventsLate):
 
     return farmNumbersEarly, farmNumbersLate
 
-#@st.cache_data
+@st.cache_data
 def getNumberOfReturners(farmNumbersEarly, farmNumbersLate, ITERS):
     farmEarlyReturns = pd.DataFrame(0, index=np.arange(ITERS), columns=farmNumbersEarly.columns)
     farmLateReturns = farmNumbersLate.map(lambda x: round(x*LATE_RETURNS_PROP))
