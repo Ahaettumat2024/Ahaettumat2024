@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 
 ## Hægt að breyta
-#@st.cache_data
+@st.cache_data
 def stofnstaerdir(ITERS):
     # Calculates stock sizes per year for ITERS years
     FjoldiAa = st.session_state['rivers'].shape
