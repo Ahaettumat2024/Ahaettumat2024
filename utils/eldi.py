@@ -8,8 +8,8 @@ EVENTS_PER_YEAR = 1.75 # Average number of escape events per year
 SIZE_PROPORTION = 0.67 # Proportion of Early vs Late escapees
 ESCAPES_PER_TON = 0.5 # Amount of escapees per 1000 ton
 
-LATE_RETURNS_PROP = 0.00175 # Proportion of Late escapees that return to rivers
-EARLY_RETURNS_PROP = 0.00175 # Proportion of Early escapees that return to rivers
+LATE_RETURNS_PROP = 0.0017 # Proportion of Late escapees that return to rivers
+EARLY_RETURNS_PROP = 0.0017 # Proportion of Early escapees that return to rivers
 EARLY_YEARLY_DISTR = [0, 30/56, 17/56, 9/56] # Early returns distributed over four years
 
 
