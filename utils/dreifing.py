@@ -13,14 +13,12 @@ EARLY_LENGTH = 140
 EARLY_LENGTH_2 = EARLY_LENGTH*(1-EARLY_PROPORTION)/EARLY_PROPORTION
 
 def lateDistribution(x):
-    # Reiknar dreifingu síbúinna stokulaxa
     if x > 0:
         return np.exp(-(x/LATE_LENGTH_2)**2)
     else:
         return np.exp(-(x/LATE_LENGTH)**2)
     
 def earlyDistribution(x):
-    # Reiknar dreifingu snemmbúinna stokulaxa
     if x > 0:
         return np.exp(-(x/EARLY_LENGTH_2)**2)
     else:
