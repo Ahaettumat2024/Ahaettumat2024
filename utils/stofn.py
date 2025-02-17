@@ -11,8 +11,11 @@ def stofnstaerdir(ITERS):
     print(st.session_state['rivers'])
     temp = np.random.normal(0, 1.0,  [FjoldiAa[0], ITERS])
     std = st.session_state['rivers']['std'].to_numpy()
-    temp = np.multiply(temp, std[:, np.newaxis])
-    stofnar = temp + st.session_state['rivers']['logMedal10'].to_numpy()[:, np.newaxis]
+    mu = st.session_state['rivers']['logMedal10'].to_numpy()
+    stdAdj = np.log(1+std**2/mu**2))
+    muAdj = np.log(mu**2/(mu**2+std**2)**(0.5))
+    temp = np.multiply(temp, stdAdj[:, np.newaxis])
+    stofnar = temp + muAdj[:, np.newaxis]
     stofnar = np.exp(stofnar)
     stofnar = pd.DataFrame(stofnar).round(0).clip(lower=0)
     stofnar.index = st.session_state['rivers']['nafn']
