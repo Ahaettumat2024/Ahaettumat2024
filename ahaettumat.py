@@ -44,7 +44,7 @@ if not st.session_state['calc']:
     st.session_state['farmEarlyReturns'] = farmEarlyReturns
     st.session_state['farmLateReturns'] = farmLateReturns
     st.session_state['results'] = results
-    st.session_state['calc'] = True
+    #st.session_state['calc'] = True
 
 ## Laxastofn
 river = tab1.selectbox(
