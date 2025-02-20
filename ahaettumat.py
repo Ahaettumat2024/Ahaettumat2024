@@ -74,7 +74,7 @@ for eldisIdx in st.session_state['eldi'].index:
 
 col311.metric('Average number of events per year',  st.session_state['escSchedule'].mean())
 col312.metric('Average escapes per year', round(( st.session_state['farmNumbersEarly'].to_numpy().sum()+ st.session_state['farmNumbersLate'].to_numpy().sum())/ITERS))
-col313.metric('Escapes per 1000 tons', round(( st.session_state['farmNumbersEarly'].to_numpy().sum()+ st.session_state['farmNumbersLate'].to_numpy().sum())/(ITERS*1000*st.session_state['eldi'].loc[:,'Stock'].sum()),1))
+col313.metric('Escapes per ton', round(( st.session_state['farmNumbersEarly'].to_numpy().sum()+ st.session_state['farmNumbersLate'].to_numpy().sum())/(ITERS*1000*st.session_state['eldi'].loc[:,'Stock'].sum()),1))
 
 f2, ax2 = plt.subplots()
 eldi = col31.selectbox(
