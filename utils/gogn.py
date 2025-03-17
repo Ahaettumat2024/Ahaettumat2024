@@ -3,7 +3,7 @@ import pandas as pd
 
 
 def getRivers():
-    rivers = pd.read_csv('./data/ahaetta.csv', sep=';', decimal=',')                 
+    rivers = pd.read_csv('./data/ahaetta.csv', sep=',', decimal='.')                 
     rivers = rivers[rivers.ath != 'ut']
     if 'std' not in rivers.columns:
         rivers['std'] = 0.5
