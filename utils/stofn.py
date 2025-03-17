@@ -4,20 +4,15 @@ import pandas as pd
 import numpy as np
 
 ## Hægt að breyta
-@st.cache_data
-def stofnstaerdir(ITERS):
-    # Calculates stock sizes per year for ITERS years
-    FjoldiAa = st.session_state['rivers'].shape
-    print(st.session_state['rivers'])
-    temp = np.random.normal(0, 1.0,  [FjoldiAa[0], ITERS])
-    std = st.session_state['rivers']['std'].to_numpy()    
-    temp = np.multiply(temp, std[:, np.newaxis])
-    stofnar = temp + st.session_state['rivers']['logMedal10'].to_numpy()[:, np.newaxis]
-    stofnar = np.exp(stofnar)
+def stofnstaerdir(data, ITERS):
+    stofnar = pd.DataFrame([])
+    for i in range(ITERS):
+        year = np.random.lognormal(data['rivers']['logMedal10'].to_numpy(), data['rivers']['std'].to_numpy())
+        stofnar[i] = year
     stofnar = pd.DataFrame(stofnar).round(0).clip(lower=0)
-    stofnar.index = st.session_state['rivers']['nafn']
-    
+    stofnar.index = data['rivers']['nafn']
     return stofnar.T
+
 
 
 
@@ -26,7 +21,7 @@ def plotStofnstaerdir(ax,stofnstaerdir, row, plotType, ITERS):
     # plottar fyrir valda á
     stofn = stofnstaerdir.copy()
     stofn.loc[:,'Total'] = stofn.sum(numeric_only=True, axis=1)
-    medaltal = stofn.loc[:,row].mean()
+    medaltal = stofn.loc[:,row].median()
     if plotType == 'Timeline':
         ax.plot(np.arange(0,ITERS),stofn.loc[:,row])
         ax.axhline(medaltal, color='r', linestyle='dashed', linewidth=1, label='Average: '+str(round(medaltal)))
