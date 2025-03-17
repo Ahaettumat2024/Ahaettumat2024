@@ -4,28 +4,20 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-EVENTS_PER_YEAR = 1.75 # Average number of escape events per year
-SIZE_PROPORTION = 0.67 # Proportion of Early vs Late escapees
-ESCAPES_PER_TON = 0.5 # Amount of escapees per 1000 ton
 
-LATE_RETURNS_PROP = 0.0016 # Proportion of Late escapees that return to rivers (0.16%)
-EARLY_RETURNS_PROP = 0.0007 # Proportion of Early escapees that return to rivers (0.07%)
-EARLY_YEARLY_DISTR = [0, 30/56, 17/56, 9/56] # Early returns distributed over four years
 
 
 
 ## Hægt að breyta
-@st.cache_data
-def calcEscapeEvents(ITERS):
-    # Number of events for ITERS years
+def calcEscapeEvents(data,ITERS, EVENTS_PER_YEAR):
+    # Reiknar fjölda atburða per ár ITERS ár
     escSchedule = np.random.poisson(EVENTS_PER_YEAR, ITERS)
     return escSchedule
 
-@st.cache_data
-def splitEvents(escSchedule, ITERS):
-    # Divides events down to farm sites based on production
-    farmNumbers = st.session_state['eldi'].index.to_numpy()
-    stocks = st.session_state['eldi']['Stock'].to_numpy()
+def splitEvents(data,escSchedule, ITERS):
+    # Skiptir atburðum niður á eldisstaði eftir eldismagni
+    farmNumbers = data['eldi'].index.to_numpy()
+    stocks = data['eldi']['Stock'].to_numpy()
     stocksProbabilities = stocks/np.sum(stocks)
     farmEvents = pd.DataFrame(0, index=np.arange(ITERS), columns=farmNumbers)
     for i in range(ITERS):
@@ -34,9 +26,8 @@ def splitEvents(escSchedule, ITERS):
             farmEvents.loc[i,farm] += 1
     return farmEvents
 
-@st.cache_data
-def splitFarmEvents(farmEvents,ITERS):
-    # Splits events into early / late
+def splitFarmEvents(data,farmEvents,ITERS, SIZE_PROPORTION):
+    # Skiptir atburðum niður eftir stærð stokulaxa
 
     farmEventsEarly, farmEventsLate = pd.DataFrame(0, index=np.arange(ITERS), columns=farmEvents.columns), pd.DataFrame(0, index=np.arange(ITERS), columns=farmEvents.columns)
     for i in range(ITERS):
@@ -48,13 +39,12 @@ def splitFarmEvents(farmEvents,ITERS):
                     farmEventsEarly.loc[i,farm] += 1
     return farmEventsEarly, farmEventsLate
 
-@st.cache_data
-def getSizeOfEvents(farmEventsEarly, farmEventsLate):
-    # Calculates size of events
+def getSizeOfEvents(data,farmEventsEarly, farmEventsLate, ESCAPES_PER_TON, EVENTS_PER_YEAR):
+    # Reiknar meðalstærð atburða á eldisstað
     def getSizeOfEvents(numberOfEvents):
-        # A random function that returns size of events based on number of events
+        # slembifall sem gefur stærð strokatburðar
         number = 0
-        farmTotal = np.sum(st.session_state['eldi']['Stock'].to_numpy())
+        farmTotal = np.sum(data['eldi']['Stock'].to_numpy())
         expected = ESCAPES_PER_TON*farmTotal*1000/EVENTS_PER_YEAR
         for i in range(numberOfEvents):
             number += np.random.exponential(expected)
@@ -66,11 +56,11 @@ def getSizeOfEvents(farmEventsEarly, farmEventsLate):
 
     return farmNumbersEarly, farmNumbersLate
 
-@st.cache_data
-def getNumberOfReturners(farmNumbersEarly, farmNumbersLate, ITERS):
+
+def getNumberOfReturners(data,farmNumbersEarly, farmNumbersLate, ITERS, LATE_RETURNS_PROP, EARLY_RETURNS_PROP, EARLY_YEARLY_DISTR):
     farmEarlyReturns = pd.DataFrame(0, index=np.arange(ITERS), columns=farmNumbersEarly.columns)
     farmLateReturns = farmNumbersLate.map(lambda x: round(x*LATE_RETURNS_PROP))
-    # Calculates number of returners
+    # Reiknar fjölda stokulaxa
     for i in range(ITERS):
         for farm in farmNumbersEarly.columns:
             for j in range(len(EARLY_YEARLY_DISTR)):
