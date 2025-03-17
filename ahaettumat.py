@@ -12,6 +12,20 @@ st.set_page_config(layout="wide")
 random.seed(0)
 ITERS = 2500
 
+EVENTS_PER_YEAR = 1.75 # Average number of escape events per year
+SIZE_PROPORTION = 0.67 # Proportion of Early vs Late escapees
+ESCAPES_PER_TON = 0.5 # Amount of escapees per 1000 ton
+
+LATE_RETURNS_PROP = 0.0016 # Proportion of Late escapees that return to rivers (0.16%)
+EARLY_RETURNS_PROP = 0.0007 # Proportion of Early escapees that return to rivers (0.07%)
+EARLY_YEARLY_DISTR = [0, 30/56, 17/56, 9/56] # Early returns distributed over four years
+
+LATE_PROPORTION = 0.2
+LATE_LENGTH = 240
+
+EARLY_PROPORTION = 0.5
+EARLY_LENGTH = 140
+
 ## Setup
 if 'rivers' not in st.session_state:
     st.session_state['rivers'] = getRivers()
@@ -27,13 +41,13 @@ tab1, tab2, tab3, tab4 = st.tabs(['Salmon stocks', 'Escape events', 'Distributio
 
 ## Run calculation
 if not st.session_state['calc']:
-    stofnar = stofnstaerdir(ITERS)
-    escSchedule = calcEscapeEvents(ITERS)
-    farmEvents = splitEvents(escSchedule, ITERS)
-    farmEventsEarly, farmEventsLate = splitFarmEvents(farmEvents,ITERS)
-    farmNumbersEarly, farmNumbersLate = getSizeOfEvents(farmEventsEarly, farmEventsLate)
-    farmEarlyReturns, farmLateReturns = getNumberOfReturners(farmNumbersEarly, farmNumbersLate, ITERS)
-    results = getResults(stofnar, farmEarlyReturns, farmLateReturns, ITERS)
+    stofnar = stofnstaerdir(st.session_state,ITERS)
+    escSchedule = calcEscapeEvents(st.session_state,ITERS, EVENTS_PER_YEAR)
+    farmEvents = splitEvents(st.session_state,escSchedule, ITERS)
+    farmEventsEarly, farmEventsLate = splitFarmEvents(st.session_state,farmEvents,ITERS,SIZE_PROPORTION)
+    farmNumbersEarly, farmNumbersLate = getSizeOfEvents(st.session_state,farmEventsEarly, farmEventsLate, ESCAPES_PER_TON, EVENTS_PER_YEAR)
+    farmEarlyReturns, farmLateReturns = getNumberOfReturners(st.session_state,farmNumbersEarly, farmNumbersLate, ITERS, LATE_RETURNS_PROP, EARLY_RETURNS_PROP, EARLY_YEARLY_DISTR)
+    results = getResults(st.session_state,stofnar, farmEarlyReturns, farmLateReturns, ITERS,LATE_PROPORTION,EARLY_PROPORTION,LATE_LENGTH,EARLY_LENGTH )
     st.session_state['stofnar'] = stofnar
     st.session_state['escSchedule'] = escSchedule
     st.session_state['farmEvents'] = farmEvents
@@ -44,7 +58,6 @@ if not st.session_state['calc']:
     st.session_state['farmEarlyReturns'] = farmEarlyReturns
     st.session_state['farmLateReturns'] = farmLateReturns
     st.session_state['results'] = results
-    st.session_state['calc'] = True
 
 ## Laxastofn
 river = tab1.selectbox(
@@ -70,11 +83,10 @@ col311, col312, col313 = col31.columns([1, 1, 1])
 for eldisIdx in st.session_state['eldi'].index:
     row = st.session_state['eldi'].iloc[eldisIdx]
     eldismagn.metric(row['Nafn'], row['Stock'])
-    #eldismagn.slider(row['Nafn'], 0.0, row['max'], row['Stock'], step = 0.5, key = row['Stytting'], on_change=updateEldi, args=(row['Stytting'],))
 
 col311.metric('Average number of events per year',  st.session_state['escSchedule'].mean())
 col312.metric('Average escapes per year', round(( st.session_state['farmNumbersEarly'].to_numpy().sum()+ st.session_state['farmNumbersLate'].to_numpy().sum())/ITERS))
-col313.metric('Escapes per ton', round(( st.session_state['farmNumbersEarly'].to_numpy().sum()+ st.session_state['farmNumbersLate'].to_numpy().sum())/(ITERS*1000*st.session_state['eldi'].loc[:,'Stock'].sum()),1))
+col313.metric('Escapes per 1000 tons', round(( st.session_state['farmNumbersEarly'].to_numpy().sum()+ st.session_state['farmNumbersLate'].to_numpy().sum())/(ITERS*ITERS*st.session_state['eldi'].loc[:,'Stock'].sum()),1))
 
 f2, ax2 = plt.subplots()
 eldi = col31.selectbox(
@@ -104,7 +116,7 @@ dreifingPlotType = tab3.pills(
     selection_mode="single",
     default = 'Early'
 )
-plotDistribution(ax3, dreifingPlotType, eldi2)
+plotDistribution(st.session_state, ax3, dreifingPlotType, eldi2,LATE_PROPORTION,LATE_LENGTH,EARLY_PROPORTION,EARLY_LENGTH)
 tab3.pyplot(f3)
 
 
@@ -116,5 +128,18 @@ river2 = tab4.selectbox(
     ['Total'] + list( st.session_state['rivers']['nafn']),
     key = 'river2'
 )
-plotResult(ax4, river2, st.session_state['results'])
+if river2 == 'Total':
+    resultPlotType = tab4.pills(
+        "Plot",
+        options=['Average', 'Percentage of years over 4%', 'Percentage of  3 years over 4%'],
+        selection_mode="single",
+        default = 'Average'
+    )
+else:
+    resultPlotType = 'Average'
+    tab4.metric('Percentage of years over 4%',  (results.loc[:,river2]>4).mean()*100)
+    tab4.metric('Percentage of  3 years over 4%', (results.loc[:,river2].rolling(3).mean()>4).mean(axis=0)*100)
+
+
+plotResult(ax4, river2, resultPlotType, st.session_state['results'])
 tab4.pyplot(f4)
