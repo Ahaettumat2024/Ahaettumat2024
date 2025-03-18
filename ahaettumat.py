@@ -57,12 +57,8 @@ if not st.session_state['calc']:
     farmNumbersEarly, farmNumbersLate = getSizeOfEvents(st.session_state,farmEventsEarly, farmEventsLate, ESCAPES_PER_TON, EVENTS_PER_YEAR)
     farmEarlyReturns, farmLateReturns = getNumberOfReturners(st.session_state,farmNumbersEarly, farmNumbersLate, ITERS, LATE_RETURNS_PROP, EARLY_RETURNS_PROP, EARLY_YEARLY_DISTR)
     results = getResults(st.session_state,stofnar, farmEarlyReturns, farmLateReturns, ITERS,LATE_PROPORTION,EARLY_PROPORTION,LATE_LENGTH,EARLY_LENGTH )
-    if SAFN_VESTUR_SIZE > 1:
-        results[0].drop(columns=['Safn Vestur'],inplace=True)
-        results[1].drop(columns=['Safn Vestur'],inplace=True)
-    if SAFN_AUSTUR_SIZE > 1:
-        results[0].drop(columns=['Safn Austur'],inplace=True)
-        results[1].drop(columns=['Safn Austur'],inplace=True)
+    results[0].drop(columns=['Safn Austur','Safn Vestur'],inplace=True)
+    results[1].drop(columns=['Safn Austur','Safn Vestur'],inplace=True)
     st.session_state['stofnar'] = stofnar
     st.session_state['escSchedule'] = escSchedule
     st.session_state['farmEvents'] = farmEvents
