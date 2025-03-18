@@ -65,6 +65,7 @@ def getLateFarmedDistributionNumbers(data,farmNo, amount,LATE_PROPORTION,LATE_LE
 def getResults(data, stofnstaerdir, farmEarlyReturns, farmLateReturns, ITERS,LATE_PROPORTION,EARLY_PROPORTION,LATE_LENGTH,EARLY_LENGTH ):
     # Reiknar niðurstöður
     stofn = stofnstaerdir.copy()
+    stofn3 = stofnstaerdir.copy()
     results = stofn.copy()
     for i in farmEarlyReturns.index:
         for j in farmEarlyReturns.columns:
@@ -72,8 +73,14 @@ def getResults(data, stofnstaerdir, farmEarlyReturns, farmLateReturns, ITERS,LAT
                 results.loc[i] += getEarlyFarmedDistributionNumbers(data,j, farmEarlyReturns.loc[i,j],EARLY_PROPORTION,EARLY_LENGTH)
             if farmLateReturns.loc[i,j] > 0:
                 results.loc[i] += getLateFarmedDistributionNumbers(data,j, farmLateReturns.loc[i,j],LATE_PROPORTION,LATE_LENGTH)
+
+    results3 = results.copy().rolling(3).sum()
+    stofn3 = stofn.copy().rolling(3).sum()
+    for i in results.index:
         results.loc[i,:] = 100*(results.loc[i,:].to_numpy()-stofn.loc[i,:].to_numpy())/(results.loc[i,:].clip(lower = 1)).to_numpy()
-    return results
+    for i in results3.index:
+        results3.loc[i,:] = 100*(results3.loc[i,:].to_numpy()-stofn3.loc[i,:].to_numpy())/(results3.loc[i,:].clip(lower = 1)).to_numpy()
+    return [results, results3]
 
 ## Oþarfi að breyta
 def plotDistribution(data, ax, type, farm,LATE_PROPORTION,LATE_LENGTH,EARLY_PROPORTION,EARLY_LENGTH):
@@ -93,7 +100,7 @@ def plotDistribution(data, ax, type, farm,LATE_PROPORTION,LATE_LENGTH,EARLY_PROP
 def plotResult(ax, river, type, results):
     if river == 'Total':
         if type == 'Average':
-            resultsT = results.mean(axis=0)
+            resultsT = results[0].mean(axis=0)
             ax.bar(resultsT.index, resultsT)
             ax.axhline(4, color='r', linestyle='dashed', linewidth=1)
             ax.set_title('Average percentage of farmed salmon in river')
@@ -101,7 +108,7 @@ def plotResult(ax, river, type, results):
             ax.set_xticks(ax.get_xticks())
             ax.set_xticklabels(resultsT.index, rotation=45, ha='right',fontsize=3.5)
         elif type == 'Percentage of years over 4%':
-            resultsT = ((results>4)*1).mean(axis=0)*100
+            resultsT = ((results[0]>4)*1).mean(axis=0)*100
             ax.axhline(50, color='r', linestyle='dashed', linewidth=1)
             ax.bar(resultsT.index, resultsT)
             ax.set_title('Percentage of years over 4%')
@@ -109,7 +116,7 @@ def plotResult(ax, river, type, results):
             ax.set_xticks(ax.get_xticks())
             ax.set_xticklabels(resultsT.index, rotation=45, ha='right',fontsize=3.5)
         else:
-            resultsT = ((results>4).rolling(3).mean()>4).mean(axis=0)*100
+            resultsT = ((results[1]>4)*1).mean(axis=0)*100
             ax.bar(resultsT.index, resultsT)
             ax.set_title('Percentage of 3-year averages over 4%')
             ax.axhline(4, color='r', linestyle='dashed', linewidth=1)
@@ -118,8 +125,8 @@ def plotResult(ax, river, type, results):
             ax.set_xticklabels(resultsT.index, rotation=45, ha='right',fontsize=3.5)
         
     else:
-        ax.hist(results.loc[:,river])
-        ax.axvline(results.loc[:,river].mean(), color='g', linestyle='dashed', linewidth=1, label='Average: '+str(round(results.loc[:,river].mean(),2)))
+        ax.hist(results[0].loc[:,river])
+        ax.axvline(results[0].loc[:,river].mean(), color='g', linestyle='dashed', linewidth=1, label='Average: '+str(round(results.loc[:,river].mean(),2)))
         ax.axvline(4, color='r', linestyle='dashed', linewidth=1)
         ax.legend(loc='upper right')
         ax.set_title(f'Proportion of farmed salmons in {river}')
