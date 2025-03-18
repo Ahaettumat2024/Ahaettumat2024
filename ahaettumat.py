@@ -12,8 +12,8 @@ st.set_page_config(layout="wide")
 random.seed(0)
 ITERS = 1000
 
-SAFN_VESTUR_SIZE = 1
-SAFN_AUSTUR_SIZE = 1
+SAFN_VESTUR_SIZE = 100
+SAFN_AUSTUR_SIZE = 50
 
 EVENTS_PER_YEAR = 1.75 # Average number of escape events per year
 SIZE_PROPORTION = 0.67 # Proportion of Early vs Late escapees
