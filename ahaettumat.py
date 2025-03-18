@@ -10,7 +10,7 @@ import random
 st.set_page_config(layout="wide")
 
 random.seed(0)
-ITERS = 2500
+ITERS = 1000
 
 SAFN_VESTUR_SIZE = 1
 SAFN_AUSTUR_SIZE = 1
