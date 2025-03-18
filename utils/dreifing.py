@@ -109,7 +109,7 @@ def plotResult(ax, river, type, results):
             ax.set_xticklabels(resultsT.index, rotation=45, ha='right',fontsize=3.5)
         elif type == 'Percentage of years over 4%':
             resultsT = ((results[0]>4)*1).mean(axis=0)*100
-            ax.axhline(50, color='r', linestyle='dashed', linewidth=1)
+            ax.axhline(5, color='r', linestyle='dashed', linewidth=1)
             ax.bar(resultsT.index, resultsT)
             ax.set_title('Percentage of years over 4%')
             ax.set_ylabel('Average percent')
@@ -119,7 +119,7 @@ def plotResult(ax, river, type, results):
             resultsT = ((results[1]>4)*1).mean(axis=0)*100
             ax.bar(resultsT.index, resultsT)
             ax.set_title('Percentage of 3-year averages over 4%')
-            ax.axhline(4, color='r', linestyle='dashed', linewidth=1)
+            ax.axhline(5, color='r', linestyle='dashed', linewidth=1)
             ax.set_ylabel('Average percent')
             ax.set_xticks(ax.get_xticks())
             ax.set_xticklabels(resultsT.index, rotation=45, ha='right',fontsize=3.5)
