@@ -12,6 +12,9 @@ st.set_page_config(layout="wide")
 random.seed(0)
 ITERS = 2500
 
+SAFN_VESTUR_SIZE = 0
+SAFN_AUSTUR_SIZE = 0
+
 EVENTS_PER_YEAR = 1.75 # Average number of escape events per year
 SIZE_PROPORTION = 0.67 # Proportion of Early vs Late escapees
 ESCAPES_PER_TON = 0.5 # Amount of escapees per 1000 ton
@@ -41,6 +44,10 @@ tab1, tab2, tab3, tab4 = st.tabs(['Salmon stocks', 'Escape events', 'Distributio
 
 ## Run calculation
 if not st.session_state['calc']:
+    st.session_state['rivers'].loc[st.session_state['rivers']['nafn']=='Safn Vestur','logMedal10']= np.log(SAFN_VESTUR_SIZE)
+    st.session_state['rivers'].loc[st.session_state['rivers']['nafn']=='Safn Austur','logMedal10'] = np.log(SAFN_AUSTUR_SIZE)
+    st.session_state['rivers'].loc[st.session_state['rivers']['nafn']=='Safn Vestur','expMedal10']= SAFN_VESTUR_SIZE
+    st.session_state['rivers'].loc[st.session_state['rivers']['nafn']=='Safn Austur','expMedal10'] = SAFN_AUSTUR_SIZE
     stofnar = stofnstaerdir(st.session_state,ITERS)
     escSchedule = calcEscapeEvents(st.session_state,ITERS, EVENTS_PER_YEAR)
     farmEvents = splitEvents(st.session_state,escSchedule, ITERS)
@@ -48,6 +55,8 @@ if not st.session_state['calc']:
     farmNumbersEarly, farmNumbersLate = getSizeOfEvents(st.session_state,farmEventsEarly, farmEventsLate, ESCAPES_PER_TON, EVENTS_PER_YEAR)
     farmEarlyReturns, farmLateReturns = getNumberOfReturners(st.session_state,farmNumbersEarly, farmNumbersLate, ITERS, LATE_RETURNS_PROP, EARLY_RETURNS_PROP, EARLY_YEARLY_DISTR)
     results = getResults(st.session_state,stofnar, farmEarlyReturns, farmLateReturns, ITERS,LATE_PROPORTION,EARLY_PROPORTION,LATE_LENGTH,EARLY_LENGTH )
+    results[0].drop(columns=['Safn Austur','Safn Vestur'],inplace=True)
+    results[1].drop(columns=['Safn Austur','Safn Vestur'],inplace=True)
     st.session_state['stofnar'] = stofnar
     st.session_state['escSchedule'] = escSchedule
     st.session_state['farmEvents'] = farmEvents
@@ -137,8 +146,8 @@ if river2 == 'Total':
     )
 else:
     resultPlotType = 'Average'
-    tab4.metric('Percentage of years over 4%',  (results.loc[:,river2]>4).mean()*100)
-    tab4.metric('Percentage of  3 years over 4%', (results.loc[:,river2].rolling(3).mean()>4).mean(axis=0)*100)
+    tab4.metric('Percentage of years over 4%',  (results[0].loc[:,river2]>4).mean()*100)
+    tab4.metric('Percentage of  3 years over 4%', (results[1].loc[:,river2]>4).mean()*100)
 
 
 plotResult(ax4, river2, resultPlotType, st.session_state['results'])
