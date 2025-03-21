@@ -8,12 +8,14 @@ def stofnstaerdir(data, ITERS):
     stofnar = pd.DataFrame([])
     for i in range(ITERS):
         year = np.random.lognormal(data['rivers']['logMedal10'].to_numpy(), data['rivers']['std'].to_numpy())
-        stofnar[i] = year
+        year = pd.DataFrame({i: year})
+        if i ==0:
+            stofnar = year
+        else:
+            stofnar = stofnar.join(year)
     stofnar = pd.DataFrame(stofnar).round(0).clip(lower=0)
     stofnar.index = data['rivers']['nafn']
     return stofnar.T
-
-
 
 
 ## Óþarfi að breyta
