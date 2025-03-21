@@ -82,6 +82,20 @@ def getResults(data, stofnstaerdir, farmEarlyReturns, farmLateReturns, ITERS,LAT
         results3.loc[i,:] = 100*(results3.loc[i,:].to_numpy()-stofn3.loc[i,:].to_numpy())/(results3.loc[i,:].clip(lower = 1)).to_numpy()
     return [results, results3]
 
+def getSplitResults(data, stofnstaerdir, farmEarlyReturns, farmLateReturns, ITERS,LATE_PROPORTION,EARLY_PROPORTION,LATE_LENGTH,EARLY_LENGTH):
+    # Reiknar niðurstöður
+    stofn = stofnstaerdir.copy()
+    stofn3 = stofnstaerdir.copy()
+    results = pd.DataFrame(0, index=stofn.columns, columns=farmEarlyReturns.columns)
+    for i in farmEarlyReturns.index:
+        for j in farmEarlyReturns.columns:
+            if farmEarlyReturns.loc[i,j] > 0:
+                results.loc[:,j] += getEarlyFarmedDistributionNumbers(data,j, farmEarlyReturns.loc[i,j],EARLY_PROPORTION,EARLY_LENGTH)/ITERS
+            if farmLateReturns.loc[i,j] > 0:
+                results.loc[:,j] += getLateFarmedDistributionNumbers(data,j, farmLateReturns.loc[i,j],LATE_PROPORTION,LATE_LENGTH)/ITERS
+    return results
+
+
 ## Oþarfi að breyta
 def plotDistribution(data, ax, type, farm,LATE_PROPORTION,LATE_LENGTH,EARLY_PROPORTION,EARLY_LENGTH):
     # Plottar dreyfingu
