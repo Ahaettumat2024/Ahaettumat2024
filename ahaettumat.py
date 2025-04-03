@@ -10,10 +10,10 @@ import random
 st.set_page_config(layout="wide")
 
 random.seed(0)
-ITERS = 1000
+ITERS = 2000
 
-SAFN_VESTUR_SIZE = 1
-SAFN_AUSTUR_SIZE = 1
+SAFN_VESTUR_SIZE = 200
+SAFN_AUSTUR_SIZE = 100
 
 # EVENTS_PER_YEAR = 1.75 # Average number of escape events per year ## gamla
 A_EVENTS = 0.029
@@ -23,7 +23,7 @@ SIZE_PROPORTION = 0.67 # Proportion of Early vs Late escapees
 ESCAPES_PER_TON = 0.5 # Amount of escapees per 1000 ton
 
 LATE_RETURNS_PROP = 0.0016 # Proportion of Late escapees that return to rivers (0.16%)
-EARLY_RETURNS_PROP = 0.0007 # Proportion of Early escapees that return to rivers (0.07%)
+EARLY_RETURNS_PROP = 0.0013 # Proportion of Early escapees that return to rivers (0.07%)
 EARLY_YEARLY_DISTR = [0, 30/56, 17/56, 9/56] # Early returns distributed over four years
 
 LATE_PROPORTION = 0.2
