@@ -1,4 +1,4 @@
-
+ts
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -16,8 +16,8 @@ SAFN_VESTUR_SIZE = 1
 SAFN_AUSTUR_SIZE = 1
 
 # EVENTS_PER_YEAR = 1.75 # Average number of escape events per year ## gamla
-A = 0.029
-B = 0.912
+A_EVENTS = 0.029
+B_EVENTS = 0.912
  # Average number of escape events per year
 SIZE_PROPORTION = 0.67 # Proportion of Early vs Late escapees
 ESCAPES_PER_TON = 0.5 # Amount of escapees per 1000 ton
@@ -52,11 +52,11 @@ if not st.session_state['calc']:
     st.session_state['rivers'].loc[st.session_state['rivers']['nafn']=='Safn Vestur','expMedal10']= SAFN_VESTUR_SIZE
     st.session_state['rivers'].loc[st.session_state['rivers']['nafn']=='Safn Austur','expMedal10'] = SAFN_AUSTUR_SIZE
     stofnar = stofnstaerdir(st.session_state,ITERS)
-    EVENTS_PER_YEAR = 400*A*np.sum(st.session_state['eldi']['Stock'].to_numpy())**B
-    escSchedule = calcEscapeEvents(st.session_state,ITERS, EVENTS_PER_YEAR)
+    events = 4*A_EVENTS*np.sum(st.session_state['eldi']['Stock'].to_numpy())**B_EVENTS
+    escSchedule = calcEscapeEvents(st.session_state,ITERS, events)
     farmEvents = splitEvents(st.session_state,escSchedule, ITERS)
     farmEventsEarly, farmEventsLate = splitFarmEvents(st.session_state,farmEvents,ITERS,SIZE_PROPORTION)
-    farmNumbersEarly, farmNumbersLate = getSizeOfEvents(st.session_state,farmEventsEarly, farmEventsLate, ESCAPES_PER_TON, EVENTS_PER_YEAR)
+    farmNumbersEarly, farmNumbersLate = getSizeOfEvents(st.session_state,farmEventsEarly, farmEventsLate, ESCAPES_PER_TON, events)
     farmEarlyReturns, farmLateReturns = getNumberOfReturners(st.session_state,farmNumbersEarly, farmNumbersLate, ITERS, LATE_RETURNS_PROP, EARLY_RETURNS_PROP, EARLY_YEARLY_DISTR)
     results = getResults(st.session_state,stofnar, farmEarlyReturns, farmLateReturns, ITERS,LATE_PROPORTION,EARLY_PROPORTION,LATE_LENGTH,EARLY_LENGTH )
     results[0].drop(columns=['Safn Austur','Safn Vestur'],inplace=True)
