@@ -16,7 +16,7 @@ SAFN_VESTUR_SIZE = 1
 SAFN_AUSTUR_SIZE = 1
 
 # EVENTS_PER_YEAR = 1.75 # Average number of escape events per year ## gamla
-A = 4*0.029
+A = 0.029
 B = 0.912
  # Average number of escape events per year
 SIZE_PROPORTION = 0.67 # Proportion of Early vs Late escapees
@@ -52,7 +52,7 @@ if not st.session_state['calc']:
     st.session_state['rivers'].loc[st.session_state['rivers']['nafn']=='Safn Vestur','expMedal10']= SAFN_VESTUR_SIZE
     st.session_state['rivers'].loc[st.session_state['rivers']['nafn']=='Safn Austur','expMedal10'] = SAFN_AUSTUR_SIZE
     stofnar = stofnstaerdir(st.session_state,ITERS)
-    EVENTS_PER_YEAR = A*np.sum(st.session_state['eldi']['Stock'].to_numpy())**B
+    EVENTS_PER_YEAR = 4*A*np.sum(st.session_state['eldi']['Stock'].to_numpy())**B
     escSchedule = calcEscapeEvents(st.session_state,ITERS, EVENTS_PER_YEAR)
     farmEvents = splitEvents(st.session_state,escSchedule, ITERS)
     farmEventsEarly, farmEventsLate = splitFarmEvents(st.session_state,farmEvents,ITERS,SIZE_PROPORTION)
