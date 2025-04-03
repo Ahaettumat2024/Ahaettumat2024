@@ -12,16 +12,19 @@ st.set_page_config(layout="wide")
 random.seed(0)
 ITERS = 1000
 
-SAFN_VESTUR_SIZE = 100
-SAFN_AUSTUR_SIZE = 50
+SAFN_VESTUR_SIZE = 1
+SAFN_AUSTUR_SIZE = 1
 
-EVENTS_PER_YEAR = 1.75 # Average number of escape events per year
+# EVENTS_PER_YEAR = 1.75 # Average number of escape events per year ## gamla
+A = 0.029
+B = 0.912
+ # Average number of escape events per year
 SIZE_PROPORTION = 0.67 # Proportion of Early vs Late escapees
 ESCAPES_PER_TON = 0.5 # Amount of escapees per 1000 ton
 
 LATE_RETURNS_PROP = 0.0016 # Proportion of Late escapees that return to rivers (0.16%)
 EARLY_RETURNS_PROP = 0.0007 # Proportion of Early escapees that return to rivers (0.07%)
-EARLY_YEARLY_DISTR = [0, 27/32, 5/32, 0/32] # Early returns distributed over four years
+EARLY_YEARLY_DISTR = [0, 30/56, 17/56, 9/56] # Early returns distributed over four years
 
 LATE_PROPORTION = 0.2
 LATE_LENGTH = 240
@@ -44,13 +47,12 @@ tab1, tab2, tab3, tab4 = st.tabs(['Salmon stocks', 'Escape events', 'Distributio
 
 ## Run calculation
 if not st.session_state['calc']:
-    if SAFN_VESTUR_SIZE > 1:
-        st.session_state['rivers'].loc[st.session_state['rivers']['nafn']=='Safn Vestur','logMedal10']= np.log(SAFN_VESTUR_SIZE)
-        st.session_state['rivers'].loc[st.session_state['rivers']['nafn']=='Safn Vestur','expMedal10']= SAFN_VESTUR_SIZE
-    if SAFN_AUSTUR_SIZE > 1:
-        st.session_state['rivers'].loc[st.session_state['rivers']['nafn']=='Safn Austur','logMedal10'] = np.log(SAFN_AUSTUR_SIZE)
-        st.session_state['rivers'].loc[st.session_state['rivers']['nafn']=='Safn Austur','expMedal10'] = SAFN_AUSTUR_SIZE
+    st.session_state['rivers'].loc[st.session_state['rivers']['nafn']=='Safn Vestur','logMedal10']= np.log(SAFN_VESTUR_SIZE)
+    st.session_state['rivers'].loc[st.session_state['rivers']['nafn']=='Safn Austur','logMedal10'] = np.log(SAFN_AUSTUR_SIZE)
+    st.session_state['rivers'].loc[st.session_state['rivers']['nafn']=='Safn Vestur','expMedal10']= SAFN_VESTUR_SIZE
+    st.session_state['rivers'].loc[st.session_state['rivers']['nafn']=='Safn Austur','expMedal10'] = SAFN_AUSTUR_SIZE
     stofnar = stofnstaerdir(st.session_state,ITERS)
+    EVENTS_PER_YEAR = A*np.sum(st.session_state['eldi']['Stock'].to_numpy())**B
     escSchedule = calcEscapeEvents(st.session_state,ITERS, EVENTS_PER_YEAR)
     farmEvents = splitEvents(st.session_state,escSchedule, ITERS)
     farmEventsEarly, farmEventsLate = splitFarmEvents(st.session_state,farmEvents,ITERS,SIZE_PROPORTION)
@@ -97,7 +99,7 @@ for eldisIdx in st.session_state['eldi'].index:
 
 col311.metric('Average number of events per year',  st.session_state['escSchedule'].mean())
 col312.metric('Average escapes per year', round(( st.session_state['farmNumbersEarly'].to_numpy().sum()+ st.session_state['farmNumbersLate'].to_numpy().sum())/ITERS))
-col313.metric('Escapes per 1000 tons', round(( st.session_state['farmNumbersEarly'].to_numpy().sum()+ st.session_state['farmNumbersLate'].to_numpy().sum())/(ITERS*ITERS*st.session_state['eldi'].loc[:,'Stock'].sum()),1))
+col313.metric('Escapes per ton', round(( st.session_state['farmNumbersEarly'].to_numpy().sum()+ st.session_state['farmNumbersLate'].to_numpy().sum())/(ITERS*1000*st.session_state['eldi'].loc[:,'Stock'].sum()),1))
 
 f2, ax2 = plt.subplots()
 eldi = col31.selectbox(
