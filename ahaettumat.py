@@ -16,7 +16,7 @@ SAFN_VESTUR_SIZE = 1
 SAFN_AUSTUR_SIZE = 1
 
 # EVENTS_PER_YEAR = 1.75 # Average number of escape events per year ## gamla
-A = 0.029
+A = 4*0.029
 B = 0.912
  # Average number of escape events per year
 SIZE_PROPORTION = 0.67 # Proportion of Early vs Late escapees
