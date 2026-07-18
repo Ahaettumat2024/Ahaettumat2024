@@ -52,7 +52,7 @@ if not st.session_state['calc']:
     st.session_state['rivers'].loc[st.session_state['rivers']['nafn']=='Safn Vestur','expMedal10']= SAFN_VESTUR_SIZE
     st.session_state['rivers'].loc[st.session_state['rivers']['nafn']=='Safn Austur','expMedal10'] = SAFN_AUSTUR_SIZE
     stofnar = stofnstaerdir(st.session_state,ITERS)
-    events = 4*A_EVENTS*np.sum(st.session_state['eldi']['Stock'].to_numpy())**B_EVENTS
+    events = A_EVENTS*np.sum(st.session_state['eldi']['Stock'].to_numpy())**B_EVENTS
     escSchedule = calcEscapeEvents(st.session_state,ITERS, events)
     farmEvents = splitEvents(st.session_state,escSchedule, ITERS)
     farmEventsEarly, farmEventsLate = splitFarmEvents(st.session_state,farmEvents,ITERS,SIZE_PROPORTION)
